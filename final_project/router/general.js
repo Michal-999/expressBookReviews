@@ -6,26 +6,7 @@ const public_users = express.Router();
 const axios = require('axios').default;
 
 
-const connectToURL = (url) => {
-    // Sending a GET request to the specified URL using axios
-    const req = axios.get(url);
-    // Logging the initial promise object
-    console.log(req);
-    // Handling the promise resolution
-    req.then(resp => {
-        // Logging the fulfillment message
-        console.log("Fulfilled");
-        // Logging the response data
-        console.log(resp.data);
-    })
-    // Handling the promise rejection
-    .catch(err => {
-        // Logging the rejection message with the URL
-        console.log("Rejected for url " + url);
-        // Logging the error message
-        console.log(err.toString());
-    });
-}
+
 
 
 public_users.post("/register", (req, res) => {
@@ -44,10 +25,15 @@ public_users.post("/register", (req, res) => {
 });
 
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/', async function (req, res) {
   //Write your code here
-  return res.send(JSON.stringify(books, null, 4));
+  axios.get('http://localhost:5000/books').then(
+    (responseBooks)=>{
+      return res.status(200).send(JSON.stringify(responseBooks.data,null , 4));
+    }
+  ).catch(e=>
+    res.status(404).send("cant get books <br>  "+ e)
+    )
 });
 
 // Get book details based on ISBN
@@ -65,33 +51,57 @@ public_users.get('/isbn/:isbn',function (req, res) {
   }
  });
   
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
+public_users.get('/author/:author', async function (req, res) {
+  // Write your code here
+  let author = req.params.author;
+  let booksByAuthor = [];
 
-  let book = Object.values(books).filter((book) => {
-    return book.author === author;
-  });
+  try {
+    // Assuming the API endpoint for getting all books is http://localhost:5000/books
+    const response = await axios.get('http://localhost:5000/books');
 
-  if (book.length > 0) {
-    res.send(JSON.stringify(book, null, 4));
-  } else {
-    return res.status(404).json({ message: "Book not found" });
+    for (let isbn in response.data) {
+      if (response.data[isbn].author == author) {
+        booksByAuthor.push(response.data[isbn]);
+      }
+    }
+
+    if (booksByAuthor.length > 0) {
+      return res.status(200).send(JSON.stringify(booksByAuthor, null, 4));
+    } else {
+      return res.status(404).send("No book found with author " + author);
+    }
+  } catch (error) {
+    // Handle errors, e.g., network issues or API errors
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
   }
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  const title = req.params.title;
+public_users.get('/title/:title', async function (req, res) {
+  // Write your code here
+  let title = req.params.title;
+  let booksByTitle = [];
 
-  let book = Object.values(books).filter((book) => {
-    return book.title === title;
-  });
+  try {
+    // Assuming the API endpoint for getting all books is http://localhost:5000/books
+    const response = await axios.get('http://localhost:5000/books');
 
-  if (book.length > 0) {
-    res.send(JSON.stringify(book, null, 4));
-  } else {
-    return res.status(404).json({ message: "Book not found" });
+    for (let isbn in response.data) {
+      if (response.data[isbn].title == title) {
+        booksByTitle.push(response.data[isbn]);
+      }
+    }
+
+    if (booksByTitle.length > 0) {
+      return res.status(200).send(JSON.stringify(booksByTitle, null, 4));
+    } else {
+      return res.status(404).send("No book found with title " + title);
+    }
+  } catch (error) {
+    // Handle errors, e.g., network issues or API errors
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
   }
 });
 
