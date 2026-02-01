@@ -6,6 +6,27 @@ const public_users = express.Router();
 const axios = require('axios').default;
 
 
+const connectToURL = (url) => {
+    // Sending a GET request to the specified URL using axios
+    const req = axios.get(url);
+    // Logging the initial promise object
+    console.log(req);
+    // Handling the promise resolution
+    req.then(resp => {
+        // Logging the fulfillment message
+        console.log("Fulfilled");
+        // Logging the response data
+        console.log(resp.data);
+    })
+    // Handling the promise rejection
+    .catch(err => {
+        // Logging the rejection message with the URL
+        console.log("Rejected for url " + url);
+        // Logging the error message
+        console.log(err.toString());
+    });
+}
+
 
 public_users.post("/register", (req, res) => {
   const username = req.body.username;
