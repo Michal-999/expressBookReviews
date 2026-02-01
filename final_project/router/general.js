@@ -37,8 +37,8 @@ public_users.get('/', async function (req, res) {
     (responseBooks)=>{
       return res.status(200).send(JSON.stringify(responseBooks.data,null , 4));
     }
-  ).catch(e=>
-    res.status(404).send("cant get books <br>  "+ e)
+  ).catch(error=>
+    res.status(404).send("cant get books <br>  "+ error)
     )
 });
 
