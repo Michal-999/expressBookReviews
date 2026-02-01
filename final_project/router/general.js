@@ -61,7 +61,7 @@ public_users.get('/isbn/:isbn', async function (req, res) {
   }
 });
 
-// get the authors with an async function
+
 public_users.get('/author/:author', async function (req, res) {
   let author = req.params.author;
   let booksByAuthor = [];
@@ -88,7 +88,7 @@ public_users.get('/author/:author', async function (req, res) {
   }
 });
 
-//  Get book title with async
+
 public_users.get('/title/:title', async function (req, res) {
   let title = req.params.title;
   let booksByTitle = [];
